@@ -1,0 +1,48 @@
+version: '3'
+
+tasks:
+  default:
+    desc: 'Default task is to "build"'
+    deps:
+      - build
+
+  list:
+    desc: 'Lists available tasks'
+    cmds:
+      - task --list-all
+
+  tidy:
+    desc: 'Tidy all'
+    cmds:
+      - go mod tidy
+    sources:
+      - "*.go"
+      - "internal/**/*.go"
+      - "sources/**/**/*.go"
+      - go.mod
+      - go.sum
+
+  build:
+    desc: 'Build the dank-extract tool'
+    deps: [tidy]
+    cmds:
+      - go build -o dank-extract cmd/dank-extract/main.go
+    generates:
+      - dank-extract
+    sources:
+      - "*.go"
+      - "internal/**/*.go"
+      - "sources/**/**/*.go"
+      - go.mod
+      - go.sum
+
+  clean-cache:
+    desc: 'Clean cache dir'
+    cmds:
+      - rm -rf .dank
+
+  clean:
+    desc: 'Clean all build products'
+    deps: [clean-cache]
+    cmds:
+      - rm -f dank-extract

@@ -1,0 +1,10 @@
+# dank-extract .gitignore
+
+.task
+.DS_Store
+
+# our binary
+/dank-extract
+
+# don't commit cache files!
+.dank
