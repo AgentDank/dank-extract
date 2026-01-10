@@ -1,0 +1,911 @@
+{
+  "metadata": {
+    "title": "US State Cannabis Cannabinoid Lab Results Open Data Report",
+    "generated_date": "2026-01-09",
+    "total_states": 50,
+    "states_with_open_lab_data": 4,
+    "states_with_partial_data": 12,
+    "states_with_no_open_data": 34,
+    "notes": "This report catalogs publicly available cannabis datasets with cannabinoid lab testing results across all 50 US states."
+  },
+  "states": [
+    {
+      "state": "Alabama",
+      "abbreviation": "AL",
+      "cannabis_legal_status": "Medical (Limited - CBD only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Alabama has a limited medical cannabis program (Darren Wesley 'Ato' Hall Compassion Act). No public open data portal for cannabis lab testing results identified."
+    },
+    {
+      "state": "Alaska",
+      "abbreviation": "AK",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "licensing_only",
+      "source": "Alcohol & Marijuana Control Office (AMCO)",
+      "dataset_name": "Marijuana License Search",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "AMCO Homepage",
+          "url": "https://www.commerce.alaska.gov/web/amco/"
+        },
+        {
+          "name": "License Search",
+          "url": "https://www.commerce.alaska.gov/abc/marijuana/Home/licensesearch"
+        }
+      ],
+      "content_description": "Alaska provides license search data but no public cannabinoid lab testing results. Testing data is tracked via Metrc system but not publicly released. Only two testing laboratories (Cannatest LLC and Land and Seas Laboratory) are licensed."
+    },
+    {
+      "state": "Arizona",
+      "abbreviation": "AZ",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "regulatory_only",
+      "source": "Arizona Department of Health Services (ADHS)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "ADHS Medical Marijuana Program",
+          "url": "https://www.azdhs.gov/licensing/medical-marijuana/"
+        },
+        {
+          "name": "Testing Labs List (PDF)",
+          "url": "https://www.azdhs.gov/documents/licensing/medical-marijuana/applications/mm-testing-labs-list.pdf"
+        }
+      ],
+      "content_description": "Arizona does not have a statewide reporting system for lab results like many other states. The Medical Marijuana Testing Advisory Council has recommended implementing METRC or similar tracking, but no public open data for cannabinoid testing results is available."
+    },
+    {
+      "state": "Arkansas",
+      "abbreviation": "AR",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Alcoholic Beverage Control Division",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Arkansas Medical Marijuana Commission",
+          "url": "https://www.dfa.arkansas.gov/medical-marijuana-commission"
+        }
+      ],
+      "content_description": "Arkansas has a medical marijuana program but no public open data portal for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "California",
+      "abbreviation": "CA",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "dashboards_only",
+      "source": "Department of Cannabis Control (DCC)",
+      "dataset_name": "DCC Data Dashboards",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "DCC Data Dashboards",
+          "url": "https://www.cannabis.ca.gov/resources/data-dashboard/"
+        },
+        {
+          "name": "Testing Laboratories Info",
+          "url": "https://cannabis.ca.gov/licensees/testing-laboratories/"
+        }
+      ],
+      "content_description": "California DCC provides four data dashboards (License Summary, Harvest, Sales & Price, Monthly Sales) but no publicly downloadable cannabinoid lab testing results dataset. Testing labs must follow standardized cannabinoid test methods since January 2024. Data tracked via Metrc system but not released publicly."
+    },
+    {
+      "state": "Colorado",
+      "abbreviation": "CO",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "dashboards_only",
+      "source": "Marijuana Enforcement Division (MED)",
+      "dataset_name": "Colorado Marijuana Quarterly Market Update",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "MED Data and Resources",
+          "url": "https://med.colorado.gov/data-and-resources"
+        },
+        {
+          "name": "MED Homepage",
+          "url": "https://med.colorado.gov/"
+        }
+      ],
+      "content_description": "Colorado MED provides market data dashboards in partnership with CU-Boulder, but no public downloadable cannabinoid lab testing results. Testing facilities report to MED via METRC system. The Data Analytics Team processes inventory tracking data but lab results are not publicly released."
+    },
+    {
+      "state": "Connecticut",
+      "abbreviation": "CT",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": true,
+      "data_availability": "full",
+      "source": "Connecticut Open Data Portal (data.ct.gov)",
+      "dataset_name": "Medical Marijuana and Adult-Use Cannabis Product Registry",
+      "license": "Public Domain / Open Data",
+      "links": [
+        {
+          "name": "Product Registry Dataset",
+          "url": "https://data.ct.gov/Health-and-Human-Services/Medical-Marijuana-and-Adult-Use-Cannabis-Product-R/egd5-wb6r"
+        },
+        {
+          "name": "CT Cannabis Portal Statistics",
+          "url": "https://portal.ct.gov/cannabis/knowledge-base/articles/statistics-and-documents"
+        },
+        {
+          "name": "All CT Cannabis Datasets on Data.gov",
+          "url": "https://catalog.data.gov/dataset/?tags=cannabis&organization=state-of-connecticut"
+        }
+      ],
+      "content_description": "Connecticut has the most comprehensive publicly available cannabis lab data. The Product Registry includes detailed cannabinoid profiles with THC, THC-A, CBD, and many other cannabinoids. 20+ cannabis datasets available on data.ct.gov including product registry, brand registry, sales data, and more. Data available in CSV, JSON, and API formats."
+    },
+    {
+      "state": "Delaware",
+      "abbreviation": "DE",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Office of the Marijuana Commissioner",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Delaware Cannabis Info",
+          "url": "https://cannabis.delaware.gov/"
+        }
+      ],
+      "content_description": "Delaware legalized recreational cannabis in 2023. No public open data portal for cannabinoid lab testing results has been identified yet as the program is relatively new."
+    },
+    {
+      "state": "Florida",
+      "abbreviation": "FL",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "registry_only",
+      "source": "Office of Medical Marijuana Use (OMMU)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "OMMU Weekly Updates",
+          "url": "https://knowthefactsmmj.com/about/weekly-updates/"
+        }
+      ],
+      "content_description": "Florida's OMMU publishes weekly updates with patient counts and dispensing data, but no public cannabinoid lab testing results are available. Florida uses a vertically integrated system where MMTCs conduct their own testing."
+    },
+    {
+      "state": "Georgia",
+      "abbreviation": "GA",
+      "cannabis_legal_status": "Medical (Limited - Low THC Oil)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Georgia Access to Medical Cannabis Commission",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Georgia has a very limited low-THC oil program. No public open data for cannabinoid lab testing results."
+    },
+    {
+      "state": "Hawaii",
+      "abbreviation": "HI",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Hawaii Department of Health",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Hawaii Medical Cannabis Registry",
+          "url": "https://health.hawaii.gov/medicalcannabis/"
+        }
+      ],
+      "content_description": "Hawaii has a medical cannabis program but no public open data portal for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Idaho",
+      "abbreviation": "ID",
+      "cannabis_legal_status": "Illegal",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains illegal in Idaho. No cannabis lab testing data available."
+    },
+    {
+      "state": "Illinois",
+      "abbreviation": "IL",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "reports_only",
+      "source": "Illinois Department of Financial and Professional Regulation (IDFPR)",
+      "dataset_name": "Annual Cannabis Reports",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "Cannabis Regulation Oversight Office",
+          "url": "https://cannabis.illinois.gov/"
+        },
+        {
+          "name": "Annual Cannabis Report 2025 (PDF)",
+          "url": "https://idfpr.illinois.gov/content/dam/soi/en/web/idfpr/forms/auc/fy2025-annual-cannabis-report.pdf"
+        },
+        {
+          "name": "Approved Testing Labs",
+          "url": "https://cannabis.illinois.gov/agencies/cannabis-idoa/cannabis-business-licensees/approved-testing-labs.html"
+        }
+      ],
+      "content_description": "Illinois publishes annual cannabis reports with licensing data but no public cannabinoid lab testing results. The state is building a State Cannabis Testing Laboratory expected to be operational by late 2026. 6 licensed testing labs in the state."
+    },
+    {
+      "state": "Indiana",
+      "abbreviation": "IN",
+      "cannabis_legal_status": "Illegal (CBD only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains largely illegal in Indiana (only CBD products allowed). No cannabis lab testing data available."
+    },
+    {
+      "state": "Iowa",
+      "abbreviation": "IA",
+      "cannabis_legal_status": "Medical (Limited)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Iowa Department of Public Health",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Iowa has a limited medical cannabis program. No public open data for cannabinoid lab testing results."
+    },
+    {
+      "state": "Kansas",
+      "abbreviation": "KS",
+      "cannabis_legal_status": "Illegal",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains illegal in Kansas. No cannabis lab testing data available."
+    },
+    {
+      "state": "Kentucky",
+      "abbreviation": "KY",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Kentucky Cabinet for Health and Family Services",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Kentucky Medical Cannabis Program",
+          "url": "https://www.medicalcannabis.ky.gov/"
+        }
+      ],
+      "content_description": "Kentucky's medical cannabis program was signed into law in 2023 with sales expected to begin in 2025. No public open data for cannabinoid lab testing results yet."
+    },
+    {
+      "state": "Louisiana",
+      "abbreviation": "LA",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Louisiana Department of Health",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Louisiana has a medical marijuana program but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Maine",
+      "abbreviation": "ME",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": true,
+      "data_availability": "full",
+      "source": "Office of Cannabis Policy (OCP)",
+      "dataset_name": "Adult Use Testing Data",
+      "license": "Public Domain / Open Data",
+      "links": [
+        {
+          "name": "Adult Use Testing Data",
+          "url": "https://www.maine.gov/dafs/ocp/open-data/adult-use/testing-data"
+        },
+        {
+          "name": "OCP Open Data Portal",
+          "url": "https://www.maine.gov/dafs/ocp/open-data"
+        },
+        {
+          "name": "Medical Use Data",
+          "url": "https://www.maine.gov/dafs/ocp/open-data/medical-use"
+        }
+      ],
+      "content_description": "Maine has comprehensive open data for cannabis testing. Testing data available for download in XLSX format, includes THC potency, cannabinoid profiles, residual solvents, heavy metals, pesticides, mycotoxins, and microbial testing. Data covers usable cannabis, concentrates, and infused products. Updated quarterly with failure rates by analyte category."
+    },
+    {
+      "state": "Maryland",
+      "abbreviation": "MD",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "dashboards_only",
+      "source": "Maryland Cannabis Administration (MCA)",
+      "dataset_name": "MCA Data Dashboard",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "MCA Data Dashboard",
+          "url": "https://cannabis.maryland.gov/Pages/Data-Dashboard.aspx"
+        },
+        {
+          "name": "Testing Technical Authority (PDF)",
+          "url": "https://cannabis.maryland.gov/documents/2020_policy_regulations/final-draft_mmcc-technical-authority_1.pdf"
+        }
+      ],
+      "content_description": "Maryland provides a data dashboard with sales metrics and dispensary analysis but no public cannabinoid lab testing results dataset. Testing labs follow the MMCC Technical Authority guidelines. Data tracked via Metrc but lab results not publicly released."
+    },
+    {
+      "state": "Massachusetts",
+      "abbreviation": "MA",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": true,
+      "data_availability": "partial",
+      "source": "Cannabis Control Commission (CCC)",
+      "dataset_name": "CCC Open Data Platform",
+      "license": "Public Domain / Open Data",
+      "links": [
+        {
+          "name": "CCC Open Data Platform",
+          "url": "https://masscannabiscontrol.com/open-data/"
+        },
+        {
+          "name": "Data Catalog",
+          "url": "https://masscannabiscontrol.com/open-data/data-catalog/"
+        }
+      ],
+      "content_description": "Massachusetts CCC maintains an Open Data Platform with various datasets. Data is self-reported by licensees. Includes licensing, sales, and compliance data. Some testing-related information may be available through their data catalog, though the specific cannabinoid testing results dataset availability should be verified on their portal."
+    },
+    {
+      "state": "Michigan",
+      "abbreviation": "MI",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "reports_only",
+      "source": "Cannabis Regulatory Agency (CRA)",
+      "dataset_name": "CRA Statistical Reports",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "CRA Licensing & Statistical Reports",
+          "url": "https://www.michigan.gov/cra/resources/cannabis-regulatory-agency-licensing-reports"
+        },
+        {
+          "name": "CRA Homepage",
+          "url": "https://www.michigan.gov/cra"
+        }
+      ],
+      "content_description": "Michigan CRA provides statistical reports and licensing data but no public downloadable cannabinoid lab testing results. Michigan announced a new Cannabis Reference Laboratory in 2024 for proficiency testing. Data tracked via Metrc (Statewide Marijuana Monitoring System)."
+    },
+    {
+      "state": "Minnesota",
+      "abbreviation": "MN",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Office of Cannabis Management (OCM)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Minnesota OCM",
+          "url": "https://mn.gov/ocm/"
+        }
+      ],
+      "content_description": "Minnesota legalized adult-use cannabis in 2023. The program is still being established and no public open data for cannabinoid lab testing results has been identified yet."
+    },
+    {
+      "state": "Mississippi",
+      "abbreviation": "MS",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Mississippi Department of Health",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Mississippi has a medical cannabis program but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Missouri",
+      "abbreviation": "MO",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "dashboards_only",
+      "source": "Department of Health and Senior Services (DHSS)",
+      "dataset_name": "Division of Cannabis Regulation Dashboards",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "Cannabis Data and Reports",
+          "url": "https://health.mo.gov/safety/cannabis/stats.php"
+        },
+        {
+          "name": "Cannabis Regulation Homepage",
+          "url": "https://health.mo.gov/safety/cannabis/"
+        }
+      ],
+      "content_description": "Missouri DHSS provides multiple dashboards (sales, cardholder, transfer history, item approval) but no public cannabinoid lab testing results. The state is establishing a Cannabis Reference Lab expected operational in late 2025. Testing tracked via Metrc."
+    },
+    {
+      "state": "Montana",
+      "abbreviation": "MT",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Department of Revenue Cannabis Control Division",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Cannabis Regulation",
+          "url": "https://revenue.mt.gov/card/cannabis/"
+        }
+      ],
+      "content_description": "Montana has no publicly available open data for cannabis testing results. No official list of endorsed testing laboratories is publicly available. Data tracked via Metrc."
+    },
+    {
+      "state": "Nebraska",
+      "abbreviation": "NE",
+      "cannabis_legal_status": "Illegal (CBD only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains largely illegal in Nebraska. No cannabis lab testing data available."
+    },
+    {
+      "state": "Nevada",
+      "abbreviation": "NV",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "reports_only",
+      "source": "Cannabis Compliance Board (CCB)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "CCB Homepage",
+          "url": "https://ccb.nv.gov/"
+        },
+        {
+          "name": "CCB Guidance",
+          "url": "https://ccb.nv.gov/guidance/"
+        }
+      ],
+      "content_description": "Nevada CCB releases annual demographic studies and taxable sales data but no public cannabinoid lab testing results. Labs report COAs via email to CCB. Public records requests available under NRS Chapter 239. Data tracked via Metrc."
+    },
+    {
+      "state": "New Hampshire",
+      "abbreviation": "NH",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Department of Health and Human Services",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "New Hampshire has a medical cannabis program but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "New Jersey",
+      "abbreviation": "NJ",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "regulatory_only",
+      "source": "Cannabis Regulatory Commission (CRC)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "NJ CRC Homepage",
+          "url": "https://www.nj.gov/cannabis/"
+        },
+        {
+          "name": "Testing Laboratories",
+          "url": "https://www.nj.gov/cannabis/businesses/compliance-investigations/testing-labs/"
+        },
+        {
+          "name": "Reports and Statistics",
+          "url": "https://www.nj.gov/cannabis/resources/reports-stats-info"
+        }
+      ],
+      "content_description": "New Jersey CRC provides testing guidance and lab COAs may be accessible via website or OPRA requests, but no public downloadable cannabinoid testing dataset. CRC adopted new testing guidelines in February 2025. Third-party organizations like Safe Leaf Society publish independent testing results."
+    },
+    {
+      "state": "New Mexico",
+      "abbreviation": "NM",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "dashboards_only",
+      "source": "Regulation and Licensing Department (RLD) Cannabis Control Division",
+      "dataset_name": "Cannabis Reporting Online Portal (CROP)",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "CROP Data Catalog",
+          "url": "https://crop.rld.nm.gov/data-catalog.html"
+        },
+        {
+          "name": "CROP Main Portal",
+          "url": "https://crop.rld.nm.gov/default.html"
+        },
+        {
+          "name": "RLD Cannabis Division",
+          "url": "https://www.rld.nm.gov/cannabis/"
+        }
+      ],
+      "content_description": "New Mexico provides CROP portal with plant count, sales data, and dispensary information dashboards. Store-level data available. No specific cannabinoid lab testing results dataset identified. Data tracked via BioTrack system."
+    },
+    {
+      "state": "New York",
+      "abbreviation": "NY",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "licensing_only",
+      "source": "Office of Cannabis Management (OCM)",
+      "dataset_name": "Current OCM Licenses",
+      "license": "Public Domain / Open Data",
+      "links": [
+        {
+          "name": "OCM Licenses Dataset",
+          "url": "https://data.ny.gov/Economic-Development/Current-OCM-Licenses/jskf-tt3q"
+        },
+        {
+          "name": "OCM Homepage",
+          "url": "https://cannabis.ny.gov/"
+        },
+        {
+          "name": "Cannabis Laboratories Info",
+          "url": "https://cannabis.ny.gov/cannabis-laboratories"
+        }
+      ],
+      "content_description": "New York OCM provides licensing datasets on data.ny.gov but no public cannabinoid lab testing results. All products must have QR codes linking to COAs. Testing follows NYS DOH methods. Data tracked via BioTrack."
+    },
+    {
+      "state": "North Carolina",
+      "abbreviation": "NC",
+      "cannabis_legal_status": "Illegal (CBD only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains largely illegal in North Carolina. No cannabis lab testing data available."
+    },
+    {
+      "state": "North Dakota",
+      "abbreviation": "ND",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "North Dakota Department of Health",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "North Dakota has a medical cannabis program but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Ohio",
+      "abbreviation": "OH",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Division of Cannabis Control (DCC)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Ohio DCC",
+          "url": "https://com.ohio.gov/divisions-and-programs/cannabis-control"
+        }
+      ],
+      "content_description": "Ohio voters approved recreational cannabis in 2023. The program is being established and no public open data for cannabinoid lab testing results has been identified yet."
+    },
+    {
+      "state": "Oklahoma",
+      "abbreviation": "OK",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Oklahoma Medical Marijuana Authority (OMMA)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "OMMA Homepage",
+          "url": "https://oklahoma.gov/omma.html"
+        }
+      ],
+      "content_description": "Oklahoma has one of the largest medical marijuana programs but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Oregon",
+      "abbreviation": "OR",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "market_data_only",
+      "source": "Oregon Liquor and Cannabis Commission (OLCC)",
+      "dataset_name": "Marijuana Market Data",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "Marijuana Market Data",
+          "url": "https://www.oregon.gov/olcc/marijuana/Pages/Marijuana-Market-Data.aspx"
+        },
+        {
+          "name": "Cannabis Tracking System Info",
+          "url": "https://www.oregon.gov/olcc/marijuana/Pages/cannabistrackingsystem.aspx"
+        },
+        {
+          "name": "Cannabis Pesticide Guide (Data.gov)",
+          "url": "https://catalog.data.gov/dataset/?tags=cannabis&organization=state-of-oregon"
+        }
+      ],
+      "content_description": "Oregon OLCC provides market data (harvest, price, sales) but no public cannabinoid lab testing results dataset. Testing tracked via Metrc with COAs required. OHA oversees testing rules. Researchers have obtained testing data via public records requests."
+    },
+    {
+      "state": "Pennsylvania",
+      "abbreviation": "PA",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": true,
+      "data_availability": "partial",
+      "source": "Department of Health Office of Medical Marijuana",
+      "dataset_name": "Medical Marijuana Program Data",
+      "license": "Public Domain / Open Data",
+      "links": [
+        {
+          "name": "PA Open Data Portal - Marijuana",
+          "url": "https://data.pa.gov/browse?tags=marijuana"
+        },
+        {
+          "name": "PA DOH Medical Marijuana",
+          "url": "https://www.pa.gov/agencies/health/programs/medical-marijuana"
+        }
+      ],
+      "content_description": "Pennsylvania provides some medical marijuana data on data.pa.gov including dispensary locations and aggregate transaction data. De-identified certification data released after court order. Research data access available with IRB approval. No raw lab testing results publicly available but some product-level data may be accessible."
+    },
+    {
+      "state": "Rhode Island",
+      "abbreviation": "RI",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "reports_only",
+      "source": "Department of Business Regulation Office of Cannabis Regulation",
+      "dataset_name": "Rhode Island Cannabis Data",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "Office of Cannabis Regulation Data",
+          "url": "https://dbr.ri.gov/office-cannabis-regulation/data"
+        },
+        {
+          "name": "RIDOH Cannabis Safety",
+          "url": "https://health.ri.gov/cannabis-safety"
+        }
+      ],
+      "content_description": "Rhode Island provides industry overview reports and monthly PDFs but no public cannabinoid lab testing results dataset. Testing tracked via Metrc. RIDOH provides Cannabis Use Data Hub for public health monitoring."
+    },
+    {
+      "state": "South Carolina",
+      "abbreviation": "SC",
+      "cannabis_legal_status": "Illegal (CBD only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains largely illegal in South Carolina. No cannabis lab testing data available."
+    },
+    {
+      "state": "South Dakota",
+      "abbreviation": "SD",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "South Dakota Department of Health",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "South Dakota has a medical cannabis program but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Tennessee",
+      "abbreviation": "TN",
+      "cannabis_legal_status": "Illegal (CBD only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains largely illegal in Tennessee. No cannabis lab testing data available."
+    },
+    {
+      "state": "Texas",
+      "abbreviation": "TX",
+      "cannabis_legal_status": "Medical (Limited - Low THC)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Texas Department of Public Safety",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Texas has a very limited Compassionate Use Program (low-THC cannabis). No public open data for cannabinoid lab testing results. Hemp testing labs must be DEA-registered by December 2025."
+    },
+    {
+      "state": "Utah",
+      "abbreviation": "UT",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Utah Department of Health and Human Services",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Utah has a medical cannabis program but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Vermont",
+      "abbreviation": "VT",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": false,
+      "data_availability": "licensing_only",
+      "source": "Cannabis Control Board (CCB)",
+      "dataset_name": "Licensed Cannabis Establishments Data Portal",
+      "license": "Public Domain",
+      "links": [
+        {
+          "name": "CCB Licenses Data Portal",
+          "url": "https://ccb.vermont.gov/licenses"
+        },
+        {
+          "name": "CCB Reports",
+          "url": "https://ccb.vermont.gov/reports"
+        },
+        {
+          "name": "Lab Potency Reporting Metrics",
+          "url": "https://ccb.vermont.gov/cannabis-lab-potency-reporting-metrics"
+        }
+      ],
+      "content_description": "Vermont CCB provides licensing data portal (updated daily) but no public cannabinoid lab testing results. State conducted proficiency testing of all labs and found reporting inconsistencies. 2 testing labs licensed. NCS Analytics platform used for inventory tracking."
+    },
+    {
+      "state": "Virginia",
+      "abbreviation": "VA",
+      "cannabis_legal_status": "Medical (Recreational possession only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "Virginia Cannabis Control Authority (CCA)",
+      "dataset_name": null,
+      "license": null,
+      "links": [
+        {
+          "name": "Virginia CCA",
+          "url": "https://www.cca.virginia.gov/"
+        }
+      ],
+      "content_description": "Virginia has a medical cannabis program and allows recreational possession but no retail sales. No public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Washington",
+      "abbreviation": "WA",
+      "cannabis_legal_status": "Recreational & Medical",
+      "has_open_lab_data": true,
+      "data_availability": "via_request",
+      "source": "Liquor and Cannabis Board (LCB)",
+      "dataset_name": "Cannabis Traceability Data (via public records request)",
+      "license": "Public Records Request",
+      "links": [
+        {
+          "name": "LCB Research Dashboards",
+          "url": "https://lcb.wa.gov/research/dashboards"
+        },
+        {
+          "name": "LCB Lab Resources",
+          "url": "https://lcb.wa.gov/ccrs/labs"
+        },
+        {
+          "name": "Cannabis Examiners",
+          "url": "https://lcb.wa.gov/examiners"
+        }
+      ],
+      "content_description": "Washington's traceability data including cannabinoid testing results is available via public records requests. Researchers have obtained 304,000+ test results via such requests. LCB provides dashboards but not raw lab data directly. CCRS (Cannabis Central Reporting System) replaced Leaf Data Systems. Scientific publications have analyzed WA testing data extensively."
+    },
+    {
+      "state": "West Virginia",
+      "abbreviation": "WV",
+      "cannabis_legal_status": "Medical",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": "West Virginia Office of Medical Cannabis",
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "West Virginia has a medical cannabis program but no public open data for cannabinoid lab testing results has been identified."
+    },
+    {
+      "state": "Wisconsin",
+      "abbreviation": "WI",
+      "cannabis_legal_status": "Illegal (CBD only)",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains largely illegal in Wisconsin. No cannabis lab testing data available."
+    },
+    {
+      "state": "Wyoming",
+      "abbreviation": "WY",
+      "cannabis_legal_status": "Illegal",
+      "has_open_lab_data": false,
+      "data_availability": "none",
+      "source": null,
+      "dataset_name": null,
+      "license": null,
+      "links": [],
+      "content_description": "Cannabis remains illegal in Wyoming. No cannabis lab testing data available."
+    }
+  ],
+  "additional_resources": [
+    {
+      "name": "Data.gov Cannabis Datasets",
+      "url": "https://catalog.data.gov/dataset/?tags=cannabis",
+      "description": "Federal open data catalog with 26 cannabis datasets primarily from Connecticut, Washington, New York, and Oregon."
+    },
+    {
+      "name": "Kushy Cannabis Dataset (Kaggle/GitHub)",
+      "url": "https://github.com/kushyapp/cannabis-dataset",
+      "description": "Open source cannabis dataset with strains, products, shops, brands, and some lab results data."
+    },
+    {
+      "name": "1000 Cannabis Genomes Project",
+      "url": "https://www.kaggle.com/datasets/bigquery/genomics-cannabis",
+      "description": "DNA sequencing data for ~850 cannabis strains available in BigQuery."
+    },
+    {
+      "name": "NCSL State Cannabis Policy Database",
+      "url": "https://www.ncsl.org/health/state-cannabis-legislation-database",
+      "description": "Comprehensive database of enacted state cannabis legislation across all 50 states."
+    },
+    {
+      "name": "DoltHub Cannabis Data Sets",
+      "url": "https://www.dolthub.com/blog/2020-04-20-cannabis-data-sets/",
+      "description": "Collection of cannabis datasets including Washington state lab testing analysis of 200,000+ tests."
+    },
+    {
+      "name": "US State Cannabis Policy Bundles Dataset (Nature Scientific Data)",
+      "url": "https://www.nature.com/articles/s41597-025-05284-2",
+      "description": "Academic dataset categorizing state cannabis policies from 1994-2023 into pharmaceutical, permissive, and fiscal bundles."
+    }
+  ]
+}
