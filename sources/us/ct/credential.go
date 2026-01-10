@@ -8,8 +8,10 @@
 package ct
 
 import (
+	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/AgentDank/dank-extract/sources"
@@ -59,5 +61,37 @@ func (c Credential) CSVHeaders() string {
 func (c Credential) CSVValue() string {
 	return fmt.Sprintf(`"%s","%s","%s"
 `, CSVString(c.CredentialType), CSVString(c.Status), c.Count)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// DBInsertCredentials inserts credentials into DuckDB
+func DBInsertCredentials(conn *sql.DB, credentials []Credential) error {
+	if len(credentials) == 0 {
+		return nil
+	}
+
+	// Clear existing data and insert fresh (credentials are a snapshot, not append-only)
+	if _, err := conn.Exec("DELETE FROM ct_credentials"); err != nil {
+		return fmt.Errorf("failed to clear credentials: %w", err)
+	}
+
+	var sb strings.Builder
+	sb.WriteString("INSERT INTO ct_credentials (credential_type, status, count) VALUES ")
+
+	for i, c := range credentials {
+		if i > 0 {
+			sb.WriteString(",")
+		}
+		sb.WriteString(fmt.Sprintf("('%s','%s',%d)",
+			sources.SQLString(c.CredentialType),
+			sources.SQLString(c.Status),
+			c.CountInt()))
+	}
+
+	if _, err := conn.Exec(sb.String()); err != nil {
+		return fmt.Errorf("failed to insert credentials: %w", err)
+	}
+	return nil
 }
 

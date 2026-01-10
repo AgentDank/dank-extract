@@ -6,5 +6,8 @@
 # our binary
 /dank-extract
 
+# don't commit test data files!
+/dank-data.duckdb
+
 # don't commit cache files!
 .dank

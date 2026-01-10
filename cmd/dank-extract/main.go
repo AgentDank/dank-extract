@@ -47,7 +47,7 @@ func main() {
 	flag.StringVarP(&appToken, "token", "t", "", "ct.data.gov App Token")
 	flag.StringVar(&rootDir, "root", ".", "Root directory for .dank data")
 	flag.StringVarP(&outputDir, "output", "o", "", "Output directory for exports (default: current directory)")
-	flag.StringVar(&dbFile, "db", "", "DuckDB file path (default: .dank/dank-extract.duckdb)")
+	flag.StringVar(&dbFile, "db", "", "DuckDB file path (default: dank-data.duckdb)")
 	flag.StringSliceVarP(&datasets, "dataset", "d", availableDatasets, "Datasets to fetch (brands,credentials,applications,sales,tax)")
 	flag.BoolVarP(&noFetch, "no-fetch", "n", false, "Don't fetch data, use existing cache")
 	flag.BoolVarP(&compress, "compress", "c", false, "Compress output files with zstd")
@@ -79,7 +79,7 @@ func main() {
 	}
 
 	if dbFile == "" {
-		dbFile = filepath.Join(sources.GetDankDir(), "dank-extract.duckdb")
+		dbFile = "dank-data.duckdb"
 	}
 
 	// Convert datasets to a set for easy lookup
@@ -282,6 +282,10 @@ func processCredentials(opts processOpts) ([]string, error) {
 		return nil, err
 	}
 
+	if err := ct.DBInsertCredentials(opts.conn, credentials); err != nil {
+		return nil, fmt.Errorf("failed to insert credentials: %w", err)
+	}
+
 	if opts.verbose {
 		log.Printf("Processed %d credentials", len(credentials))
 	}
@@ -305,6 +309,10 @@ func processApplications(opts processOpts) ([]string, error) {
 	files, err := exportFiles(applications, ct.ApplicationCSVFilename, ct.ApplicationJSONFilename, opts)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := ct.DBInsertApplications(opts.conn, applications); err != nil {
+		return nil, fmt.Errorf("failed to insert applications: %w", err)
 	}
 
 	if opts.verbose {
@@ -332,6 +340,10 @@ func processWeeklySales(opts processOpts) ([]string, error) {
 		return nil, err
 	}
 
+	if err := ct.DBInsertWeeklySales(opts.conn, sales); err != nil {
+		return nil, fmt.Errorf("failed to insert weekly sales: %w", err)
+	}
+
 	if opts.verbose {
 		log.Printf("Processed %d weekly sales", len(sales))
 	}
@@ -355,6 +367,10 @@ func processTax(opts processOpts) ([]string, error) {
 	files, err := exportFiles(taxes, ct.TaxCSVFilename, ct.TaxJSONFilename, opts)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := ct.DBInsertTax(opts.conn, taxes); err != nil {
+		return nil, fmt.Errorf("failed to insert tax: %w", err)
 	}
 
 	if opts.verbose {

@@ -8,7 +8,9 @@
 package ct
 
 import (
+	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/AgentDank/dank-extract/sources"
@@ -67,4 +69,52 @@ func (t Tax) CSVValue() string {
 		t.OtherCannabisTax,
 		t.TotalTax,
 	)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// DBInsertTax inserts tax records into DuckDB
+func DBInsertTax(conn *sql.DB, taxes []Tax) error {
+	if len(taxes) == 0 {
+		return nil
+	}
+
+	// Clear existing data and insert fresh
+	if _, err := conn.Exec("DELETE FROM ct_tax"); err != nil {
+		return fmt.Errorf("failed to clear tax: %w", err)
+	}
+
+	var sb strings.Builder
+	sb.WriteString(`INSERT INTO ct_tax (
+		period_end_date, month, year, fiscal_year,
+		plant_material_tax, edible_products_tax, other_cannabis_tax, total_tax
+	) VALUES `)
+
+	for i, t := range taxes {
+		if i > 0 {
+			sb.WriteString(",")
+		}
+		sb.WriteString(fmt.Sprintf("('%s','%s','%s','%s',%s,%s,%s,%s)",
+			sources.SQLString(t.PeriodEndDate),
+			sources.SQLString(t.Month),
+			sources.SQLString(t.Year),
+			sources.SQLString(t.FiscalYear),
+			sqlNumOrNull(t.PlantMaterialTax),
+			sqlNumOrNull(t.EdibleProductsTax),
+			sqlNumOrNull(t.OtherCannabisTax),
+			sqlNumOrNull(t.TotalTax)))
+	}
+
+	if _, err := conn.Exec(sb.String()); err != nil {
+		return fmt.Errorf("failed to insert tax: %w", err)
+	}
+	return nil
+}
+
+// sqlNumOrNull converts a string number to SQL value, returning NULL for empty
+func sqlNumOrNull(s string) string {
+	if s == "" {
+		return "NULL"
+	}
+	return s
 }
