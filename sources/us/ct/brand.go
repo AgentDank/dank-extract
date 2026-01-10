@@ -16,7 +16,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AgentDank/dank-extract/internal/db"
 	"github.com/AgentDank/dank-extract/sources"
 	"github.com/relvacode/iso8601"
 )
@@ -181,9 +180,9 @@ func DBInsertBrands(conn *sql.DB, brands []Brand) error {
 		return nil
 	}
 
-	sqlHeader := `INSERT INTO brands_us_ct (
+	sqlHeader := `INSERT INTO ct_brands (
 brand_name,dosage_form,branding_entity,product_image_url,product_image_desc,label_image_url,
-lavel_image_desc,lab_analysis_url,lab_analysis_desc,approval_date,registration_number,
+label_image_desc,lab_analysis_url,lab_analysis_desc,approval_date,registration_number,
 tetrahydrocannabinol_thc,tetrahydrocannabinol_acid_thca,cannabidiols_cbd,cannabidiol_acid_cbda,
 a_pinene,b_myrcene,b_caryophyllene,b_pinene,limonene,ocimene,linalool_lin,humulene_hum,cbg,
 cbg_a,cannabavarin_cbdv,cannabichromene_cbc,cannbinol_cbn,tetrahydrocannabivarin_thcv,a_bisabolol,
@@ -205,11 +204,11 @@ VALUES `
 		}
 		isFirst = false
 		sb.WriteString(fmt.Sprintf(sqlFormat,
-			db.String(b.BrandName), db.String(b.DosageForm), db.String(b.BrandingEntity),
-			db.String(b.ProductImage.URL), db.String(b.ProductImage.Description),
-			db.String(b.LabelImage.URL), db.String(b.LabelImage.Description),
-			db.String(b.LabAnalysis.URL), db.String(b.LabAnalysis.Description),
-			b.ApprovalDate.Format("2006-01-02T15:04:05-0700"), db.String(b.RegistrationNumber),
+			sources.SQLString(b.BrandName), sources.SQLString(b.DosageForm), sources.SQLString(b.BrandingEntity),
+			sources.SQLString(b.ProductImage.URL), sources.SQLString(b.ProductImage.Description),
+			sources.SQLString(b.LabelImage.URL), sources.SQLString(b.LabelImage.Description),
+			sources.SQLString(b.LabAnalysis.URL), sources.SQLString(b.LabAnalysis.Description),
+			b.ApprovalDate.Format("2006-01-02T15:04:05-0700"), sources.SQLString(b.RegistrationNumber),
 			b.TetrahydrocannabinolThc.AsSQL(),
 			b.TetrahydrocannabinolAcidThca.AsSQL(),
 			b.CannabidiolsCbd.AsSQL(),
@@ -261,8 +260,8 @@ VALUES `
 			b.CisNerolidol.AsSQL(),
 			b.Fenchol.AsSQL(),
 			b.TransNerolidol.AsSQL(),
-			db.String(b.Market), db.String(b.Chemotype), db.String(b.ProcessingTechnique),
-			db.String(b.SolventsUsed), db.String(b.NationalDrugCode)))
+			sources.SQLString(b.Market), sources.SQLString(b.Chemotype), sources.SQLString(b.ProcessingTechnique),
+			sources.SQLString(b.SolventsUsed), sources.SQLString(b.NationalDrugCode)))
 	}
 	sb.WriteString(sqlFooter)
 

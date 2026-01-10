@@ -6,12 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // CSVExportable is an interface for types that can be exported to CSV
 type CSVExportable interface {
 	CSVHeaders() string
 	CSVValue() string
+}
+
+// SQLString escapes single quotes for use in SQL queries
+func SQLString(str string) string {
+	return strings.ReplaceAll(str, "'", "''")
 }
 
 // WriteJSON writes any slice of items to a JSON file with pretty formatting
