@@ -8,6 +8,8 @@
 
 # don't commit test data files!
 /dank-data.duckdb
+/*.csv
+/*.json
 
 # don't commit snapthots!
 /snapshots
