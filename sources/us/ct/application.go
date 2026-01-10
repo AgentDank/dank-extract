@@ -1,4 +1,4 @@
-// Copyright 2025 Neomantra Corp
+// Copyright 2026 Neomantra Corp
 //
 // CT Cannabis Applications Data
 //
@@ -114,4 +114,3 @@ func DBInsertApplications(conn *sql.DB, applications []Application) error {
 	}
 	return nil
 }
-

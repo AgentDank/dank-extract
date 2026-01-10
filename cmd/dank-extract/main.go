@@ -1,4 +1,4 @@
-// Copyright 2025 Neomantra Corp
+// Copyright 2026 Neomantra Corp
 //
 // dank-extract CLI - Cannabis data fetching, cleaning, and export tool
 

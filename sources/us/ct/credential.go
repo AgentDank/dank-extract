@@ -1,4 +1,4 @@
-// Copyright 2025 Neomantra Corp
+// Copyright 2026 Neomantra Corp
 //
 // CT Cannabis Credential Count Data
 //
@@ -94,4 +94,3 @@ func DBInsertCredentials(conn *sql.DB, credentials []Credential) error {
 	}
 	return nil
 }
-

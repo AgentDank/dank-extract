@@ -1,4 +1,4 @@
-// Copyright 2025 Neomantra Corp
+// Copyright 2026 Neomantra Corp
 //
 // CT Cannabis Retail Sales Data
 //
@@ -24,15 +24,15 @@ const (
 
 // WeeklySales represents a CT cannabis weekly retail sales record
 type WeeklySales struct {
-	WeekEnding                       string `json:"unnamed_column"` // ISO 8601 datetime
-	AdultUse                         string `json:"adult_use"`
-	Medical                          string `json:"medical"`
-	Total                            string `json:"total"`
-	AdultUseProductsSold             string `json:"adult_use_products_sold"`
-	MedicalProductsSold              string `json:"medical_products_sold"`
-	TotalProductsSold                string `json:"total_products_sold"`
-	AdultUseCannabisAveragePrice     string `json:"adult_use_cannabis_average_product_price"`
-	MedicalMarijuanaAveragePrice     string `json:"medical_marijuana_average_product_price"`
+	WeekEnding                   string `json:"unnamed_column"` // ISO 8601 datetime
+	AdultUse                     string `json:"adult_use"`
+	Medical                      string `json:"medical"`
+	Total                        string `json:"total"`
+	AdultUseProductsSold         string `json:"adult_use_products_sold"`
+	MedicalProductsSold          string `json:"medical_products_sold"`
+	TotalProductsSold            string `json:"total_products_sold"`
+	AdultUseCannabisAveragePrice string `json:"adult_use_cannabis_average_product_price"`
+	MedicalMarijuanaAveragePrice string `json:"medical_marijuana_average_product_price"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,4 +122,3 @@ func DBInsertWeeklySales(conn *sql.DB, sales []WeeklySales) error {
 	}
 	return nil
 }
-

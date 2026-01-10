@@ -1,4 +1,4 @@
-// Copyright 2025 Neomantra Corp
+// Copyright 2026 Neomantra Corp
 //
 // CT Cannabis Data
 //
@@ -271,4 +271,3 @@ VALUES `
 	}
 	return nil
 }
-
