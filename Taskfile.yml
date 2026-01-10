@@ -46,3 +46,9 @@ tasks:
     deps: [clean-cache]
     cmds:
       - rm -f dank-extract
+
+  snapshot:
+    desc: 'Take a snapshot'
+    deps: [build]
+    cmds:
+      - ./dank-extract --snapshot snapshots

@@ -32,16 +32,18 @@ var availableDatasets = []string{
 func main() {
 	// CLI flags
 	var (
-		appToken    string
-		rootDir     string
-		outputDir   string
-		dbFile      string
-		datasets    []string
-		noFetch     bool
-		compress    bool
-		verbose     bool
-		showHelp    bool
-		maxCacheAge time.Duration
+		appToken     string
+		rootDir      string
+		outputDir    string
+		dbFile       string
+		datasets     []string
+		snapshotDir  string
+		snapshotDate string
+		noFetch      bool
+		compress     bool
+		verbose      bool
+		showHelp     bool
+		maxCacheAge  time.Duration
 	)
 
 	flag.StringVarP(&appToken, "token", "t", "", "ct.data.gov App Token")
@@ -49,6 +51,8 @@ func main() {
 	flag.StringVarP(&outputDir, "output", "o", "", "Output directory for exports (default: current directory)")
 	flag.StringVar(&dbFile, "db", "", "DuckDB file path (default: dank-data.duckdb)")
 	flag.StringSliceVarP(&datasets, "dataset", "d", availableDatasets, "Datasets to fetch (brands,credentials,applications,sales,tax)")
+	flag.StringVarP(&snapshotDir, "snapshot", "s", "", "Create snapshot in directory (e.g., ./snapshots)")
+	flag.StringVar(&snapshotDate, "snapshot-date", "", "Snapshot date in YYYY-MM-DD format (default: today)")
 	flag.BoolVarP(&noFetch, "no-fetch", "n", false, "Don't fetch data, use existing cache")
 	flag.BoolVarP(&compress, "compress", "c", false, "Compress output files with zstd")
 	flag.BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
@@ -64,6 +68,10 @@ func main() {
 		fmt.Println()
 		fmt.Println("Available datasets: " + strings.Join(availableDatasets, ", "))
 		fmt.Println()
+		fmt.Println("Snapshot mode:")
+		fmt.Println("  Use --snapshot to create a dated snapshot directory structure:")
+		fmt.Println("  <snapshot-dir>/us/ct/YYYY-MM-DD/")
+		fmt.Println()
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -72,6 +80,24 @@ func main() {
 	sources.SetDankRoot(rootDir)
 	if err := sources.EnsureDankRoot(); err != nil {
 		log.Fatalf("Failed to create data directory: %v", err)
+	}
+
+	// Handle snapshot mode
+	if snapshotDir != "" {
+		if snapshotDate == "" {
+			snapshotDate = time.Now().Format("2006-01-02")
+		}
+		// Create snapshot directory structure: <snapshotDir>/us/ct/YYYY-MM-DD/
+		outputDir = filepath.Join(snapshotDir, "us", "ct", snapshotDate)
+		dbFile = filepath.Join(outputDir, "dank-data.duckdb")
+		compress = true // Always compress in snapshot mode
+
+		if err := os.MkdirAll(outputDir, 0755); err != nil {
+			log.Fatalf("Failed to create snapshot directory: %v", err)
+		}
+		if verbose {
+			log.Printf("Snapshot mode: output to %s", outputDir)
+		}
 	}
 
 	if outputDir == "" {
@@ -93,7 +119,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to open DuckDB: %v", err)
 	}
-	defer conn.Close()
 
 	if err := db.RunMigration(conn); err != nil {
 		log.Fatalf("Failed to run migration: %v", err)
@@ -132,6 +157,11 @@ func main() {
 		} else {
 			outputFiles = append(outputFiles, files...)
 		}
+	}
+
+	// Close database connection before compressing (ensures all writes are flushed)
+	if err := conn.Close(); err != nil {
+		log.Fatalf("Failed to close DuckDB: %v", err)
 	}
 
 	// Compress DuckDB if requested

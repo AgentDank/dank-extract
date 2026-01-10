@@ -9,5 +9,8 @@
 # don't commit test data files!
 /dank-data.duckdb
 
+# don't commit snapthots!
+/snapshots
+
 # don't commit cache files!
 .dank
