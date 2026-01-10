@@ -8,12 +8,7 @@
 package ct
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"os"
 	"time"
 
 	"github.com/AgentDank/dank-extract/sources"
@@ -44,63 +39,15 @@ type Application struct {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// ApplicationConfig returns the Socrata configuration for applications
+var ApplicationConfig = sources.SocrataConfig{
+	URL:           ApplicationsURL,
+	CacheFilename: ApplicationJSONFilename,
+}
+
 // FetchApplications fetches all CT cannabis application data from the CT API
 func FetchApplications(appToken string, maxCacheAge time.Duration) ([]Application, error) {
-	// check cache
-	if cacheBytes, err := sources.CheckCacheFile(ApplicationJSONFilename, maxCacheAge); err == nil {
-		var cached []Application
-		if err := json.Unmarshal(cacheBytes, &cached); err == nil {
-			return cached, nil
-		}
-	}
-
-	// prepare the URL
-	apiUrl, err := url.Parse(ApplicationsURL)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", apiUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	q.Add("$limit", "50000")
-	if appToken != "" {
-		q.Add("$$app_token", appToken)
-	}
-	req.URL.RawQuery = q.Encode()
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("HTTP %d %s %s", resp.StatusCode, resp.Status, string(body))
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var applications []Application
-	if err := json.Unmarshal(body, &applications); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal result: %w", err)
-	}
-
-	// cache the result
-	if cacheFile, err := sources.MakeCacheFile(ApplicationJSONFilename); err == nil {
-		cacheFile.Write(body)
-		cacheFile.Close()
-	}
-
-	return applications, nil
+	return sources.FetchSocrata[Application](ApplicationConfig, appToken, maxCacheAge)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,30 +73,3 @@ func (a Application) CSVValue() string {
 	)
 }
 
-// WriteApplicationsCSV writes applications to a CSV file
-func WriteApplicationsCSV(filename string, applications []Application) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create CSV file: %w", err)
-	}
-	defer file.Close()
-
-	file.WriteString(Application{}.CSVHeaders())
-	for _, a := range applications {
-		file.WriteString(a.CSVValue())
-	}
-	return nil
-}
-
-// WriteApplicationsJSON writes applications to a JSON file
-func WriteApplicationsJSON(filename string, applications []Application) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create JSON file: %w", err)
-	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(applications)
-}

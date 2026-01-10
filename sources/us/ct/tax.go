@@ -8,12 +8,7 @@
 package ct
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"os"
 	"time"
 
 	"github.com/AgentDank/dank-extract/sources"
@@ -39,64 +34,16 @@ type Tax struct {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// TaxConfig returns the Socrata configuration for tax data
+var TaxConfig = sources.SocrataConfig{
+	URL:           TaxURL,
+	CacheFilename: TaxJSONFilename,
+	OrderBy:       "period_end_date",
+}
+
 // FetchTax fetches all CT cannabis tax data from the CT API
 func FetchTax(appToken string, maxCacheAge time.Duration) ([]Tax, error) {
-	// check cache
-	if cacheBytes, err := sources.CheckCacheFile(TaxJSONFilename, maxCacheAge); err == nil {
-		var cached []Tax
-		if err := json.Unmarshal(cacheBytes, &cached); err == nil {
-			return cached, nil
-		}
-	}
-
-	// prepare the URL
-	apiUrl, err := url.Parse(TaxURL)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", apiUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	q.Add("$limit", "50000")
-	q.Add("$order", "period_end_date")
-	if appToken != "" {
-		q.Add("$$app_token", appToken)
-	}
-	req.URL.RawQuery = q.Encode()
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("HTTP %d %s %s", resp.StatusCode, resp.Status, string(body))
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var taxes []Tax
-	if err := json.Unmarshal(body, &taxes); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal result: %w", err)
-	}
-
-	// cache the result
-	if cacheFile, err := sources.MakeCacheFile(TaxJSONFilename); err == nil {
-		cacheFile.Write(body)
-		cacheFile.Close()
-	}
-
-	return taxes, nil
+	return sources.FetchSocrata[Tax](TaxConfig, appToken, maxCacheAge)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,32 +67,4 @@ func (t Tax) CSVValue() string {
 		t.OtherCannabisTax,
 		t.TotalTax,
 	)
-}
-
-// WriteTaxCSV writes tax data to a CSV file
-func WriteTaxCSV(filename string, taxes []Tax) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create CSV file: %w", err)
-	}
-	defer file.Close()
-
-	file.WriteString(Tax{}.CSVHeaders())
-	for _, t := range taxes {
-		file.WriteString(t.CSVValue())
-	}
-	return nil
-}
-
-// WriteTaxJSON writes tax data to a JSON file
-func WriteTaxJSON(filename string, taxes []Tax) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create JSON file: %w", err)
-	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(taxes)
 }

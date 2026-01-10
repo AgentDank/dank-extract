@@ -10,21 +10,14 @@
 package ct
 
 import (
-	"bytes"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"os"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/AgentDank/dank-extract/sources"
 	"github.com/AgentDank/dank-extract/internal/db"
+	"github.com/AgentDank/dank-extract/sources"
 	"github.com/relvacode/iso8601"
 )
 
@@ -110,105 +103,16 @@ type Brand struct {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// BrandConfig is the Socrata configuration for fetching brands
+var BrandConfig = sources.SocrataConfig{
+	URL:           BrandsURL,
+	CacheFilename: BrandJSONFilename,
+	OrderBy:       "registration_number",
+}
+
 // FetchBrands fetches all the CT cannabis brands data from the CT API
 func FetchBrands(appToken string, maxCacheAge time.Duration) ([]Brand, error) {
-	// check cache
-	if cacheBytes, err := sources.CheckCacheFile(BrandJSONFilename, maxCacheAge); err == nil {
-		var cacheBrands []Brand
-		err := json.Unmarshal(cacheBytes, &cacheBrands)
-		if err == nil {
-			return cacheBrands, nil
-		}
-	}
-
-	// create a new cache file
-	cacheFile, err := sources.MakeCacheFile(BrandJSONFilename)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create JSON cache file: %w", err)
-	}
-	deleteCacheFile := true
-	defer func() {
-		cacheFile.Close()
-		if deleteCacheFile {
-			os.Remove(cacheFile.Name())
-		}
-	}()
-	cacheFile.WriteString("[")
-
-	// prepare the URL
-	brandsUrl, err := url.Parse(BrandsURL)
-	if err != nil {
-		return nil, err
-	}
-
-	var brands []Brand
-	offset := 0
-	firstLoop := true
-	for {
-		const batchLimit = 5000
-
-		req, err := http.NewRequest("GET", brandsUrl.String(), nil)
-		if err != nil {
-			return nil, err
-		}
-
-		q := req.URL.Query()
-		q.Add("$order", "registration_number")
-		q.Add("$offset", strconv.Itoa(offset))
-		q.Add("$limit", strconv.Itoa(batchLimit))
-		if appToken != "" {
-			q.Add("$$app_token", appToken)
-		}
-		req.URL.RawQuery = q.Encode()
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		defer resp.Body.Close()
-
-		badStatusCode := (resp.StatusCode != http.StatusOK)
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			if badStatusCode {
-				return nil, fmt.Errorf("HTTP %d %s %s %w", resp.StatusCode, resp.Status, string(body), err)
-			}
-			return nil, err
-		}
-		if badStatusCode {
-			return nil, fmt.Errorf("HTTP %d %s %s", resp.StatusCode, resp.Status, string(body))
-		}
-
-		var brandsBatch []Brand
-		if err := json.Unmarshal(body, &brandsBatch); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal result: %w", err)
-		}
-		brands = append(brands, brandsBatch...)
-
-		// Write to cache
-		if cacheFile != nil {
-			if !firstLoop {
-				cacheFile.WriteString(",")
-			}
-			firstLoop = false
-			body = bytes.TrimSpace(body)
-			body = bytes.TrimPrefix(body, []byte("["))
-			body = bytes.TrimSuffix(body, []byte("]"))
-			cacheFile.Write(body)
-		}
-
-		if len(brandsBatch) < batchLimit {
-			break
-		}
-		offset += batchLimit
-	}
-
-	deleteCacheFile = false
-	cacheFile.WriteString("]")
-
-	return brands, nil
+	return sources.FetchSocrata[Brand](BrandConfig, appToken, maxCacheAge)
 }
 
 // CleanBrands filters out bad Brand samples using IsBrandErroneous().
@@ -369,30 +273,3 @@ VALUES `
 	return nil
 }
 
-// WriteBrandsCSV writes brands to a CSV file
-func WriteBrandsCSV(filename string, brands []Brand) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create CSV file: %w", err)
-	}
-	defer file.Close()
-
-	file.WriteString(Brand{}.CSVHeaders())
-	for _, b := range brands {
-		file.WriteString(b.CSVValue())
-	}
-	return nil
-}
-
-// WriteBrandsJSON writes brands to a JSON file
-func WriteBrandsJSON(filename string, brands []Brand) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create JSON file: %w", err)
-	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(brands)
-}

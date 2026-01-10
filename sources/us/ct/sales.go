@@ -8,12 +8,7 @@
 package ct
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"os"
 	"time"
 
 	"github.com/AgentDank/dank-extract/sources"
@@ -40,64 +35,16 @@ type WeeklySales struct {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// WeeklySalesConfig returns the Socrata configuration for weekly sales
+var WeeklySalesConfig = sources.SocrataConfig{
+	URL:           WeeklySalesURL,
+	CacheFilename: WeeklySalesJSONFilename,
+	OrderBy:       "unnamed_column",
+}
+
 // FetchWeeklySales fetches all CT cannabis weekly sales data from the CT API
 func FetchWeeklySales(appToken string, maxCacheAge time.Duration) ([]WeeklySales, error) {
-	// check cache
-	if cacheBytes, err := sources.CheckCacheFile(WeeklySalesJSONFilename, maxCacheAge); err == nil {
-		var cached []WeeklySales
-		if err := json.Unmarshal(cacheBytes, &cached); err == nil {
-			return cached, nil
-		}
-	}
-
-	// prepare the URL
-	apiUrl, err := url.Parse(WeeklySalesURL)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", apiUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	q.Add("$limit", "50000")
-	q.Add("$order", "unnamed_column")
-	if appToken != "" {
-		q.Add("$$app_token", appToken)
-	}
-	req.URL.RawQuery = q.Encode()
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("HTTP %d %s %s", resp.StatusCode, resp.Status, string(body))
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var sales []WeeklySales
-	if err := json.Unmarshal(body, &sales); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal result: %w", err)
-	}
-
-	// cache the result
-	if cacheFile, err := sources.MakeCacheFile(WeeklySalesJSONFilename); err == nil {
-		cacheFile.Write(body)
-		cacheFile.Close()
-	}
-
-	return sales, nil
+	return sources.FetchSocrata[WeeklySales](WeeklySalesConfig, appToken, maxCacheAge)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,30 +71,3 @@ func (s WeeklySales) CSVValue() string {
 	)
 }
 
-// WriteWeeklySalesCSV writes weekly sales to a CSV file
-func WriteWeeklySalesCSV(filename string, sales []WeeklySales) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create CSV file: %w", err)
-	}
-	defer file.Close()
-
-	file.WriteString(WeeklySales{}.CSVHeaders())
-	for _, s := range sales {
-		file.WriteString(s.CSVValue())
-	}
-	return nil
-}
-
-// WriteWeeklySalesJSON writes weekly sales to a JSON file
-func WriteWeeklySalesJSON(filename string, sales []WeeklySales) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("failed to create JSON file: %w", err)
-	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(sales)
-}

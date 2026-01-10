@@ -99,49 +99,36 @@ func main() {
 		log.Fatalf("Failed to run migration: %v", err)
 	}
 
+	// Processing options passed to each processor
+	opts := processOpts{
+		appToken:    appToken,
+		maxCacheAge: maxCacheAge,
+		outputDir:   outputDir,
+		conn:        conn,
+		noFetch:     noFetch,
+		compress:    compress,
+		verbose:     verbose,
+	}
+
 	var outputFiles []string
 
-	// Process each dataset
-	if datasetSet["brands"] {
-		files, err := processBrands(appToken, maxCacheAge, outputDir, conn, noFetch, compress, verbose)
-		if err != nil {
-			log.Printf("Error processing brands: %v", err)
-		} else {
-			outputFiles = append(outputFiles, files...)
-		}
+	// Process each selected dataset
+	processors := map[string]func(processOpts) ([]string, error){
+		"brands":       processBrands,
+		"credentials":  processCredentials,
+		"applications": processApplications,
+		"sales":        processWeeklySales,
+		"tax":          processTax,
 	}
 
-	if datasetSet["credentials"] {
-		files, err := processCredentials(appToken, maxCacheAge, outputDir, noFetch, compress, verbose)
-		if err != nil {
-			log.Printf("Error processing credentials: %v", err)
-		} else {
-			outputFiles = append(outputFiles, files...)
+	for _, name := range availableDatasets {
+		if !datasetSet[name] {
+			continue
 		}
-	}
-
-	if datasetSet["applications"] {
-		files, err := processApplications(appToken, maxCacheAge, outputDir, noFetch, compress, verbose)
+		processor := processors[name]
+		files, err := processor(opts)
 		if err != nil {
-			log.Printf("Error processing applications: %v", err)
-		} else {
-			outputFiles = append(outputFiles, files...)
-		}
-	}
-
-	if datasetSet["sales"] {
-		files, err := processWeeklySales(appToken, maxCacheAge, outputDir, noFetch, compress, verbose)
-		if err != nil {
-			log.Printf("Error processing sales: %v", err)
-		} else {
-			outputFiles = append(outputFiles, files...)
-		}
-	}
-
-	if datasetSet["tax"] {
-		files, err := processTax(appToken, maxCacheAge, outputDir, noFetch, compress, verbose)
-		if err != nil {
-			log.Printf("Error processing tax: %v", err)
+			log.Printf("Error processing %s: %v", name, err)
 		} else {
 			outputFiles = append(outputFiles, files...)
 		}
@@ -169,51 +156,28 @@ func main() {
 	}
 }
 
-func processBrands(appToken string, maxCacheAge time.Duration, outputDir string, conn *sql.DB, noFetch, compress, verbose bool) ([]string, error) {
-	if verbose {
-		log.Println("Fetching CT brands data...")
-	}
+// processOpts holds common options for all dataset processors
+type processOpts struct {
+	appToken    string
+	maxCacheAge time.Duration
+	outputDir   string
+	conn        *sql.DB
+	noFetch     bool
+	compress    bool
+	verbose     bool
+}
 
-	var brands []ct.Brand
-	var err error
-
-	if noFetch {
-		cacheBytes, err := sources.CheckCacheFile(ct.BrandJSONFilename, 0) // 0 = no age limit
-		if err != nil {
-			return nil, fmt.Errorf("failed to load cache: %w", err)
-		}
-		if err := json.Unmarshal(cacheBytes, &brands); err != nil {
-			return nil, fmt.Errorf("failed to parse cached data: %w", err)
-		}
-		if verbose {
-			log.Printf("Loaded %d brands from cache", len(brands))
-		}
-	} else {
-		brands, err = ct.FetchBrands(appToken, maxCacheAge)
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch brands: %w", err)
-		}
-		if verbose {
-			log.Printf("Fetched %d brands from API", len(brands))
-		}
-	}
-
-	// Clean brands
-	originalCount := len(brands)
-	brands = ct.CleanBrands(brands)
-	if verbose {
-		log.Printf("Cleaned brands: %d -> %d (removed %d erroneous records)",
-			originalCount, len(brands), originalCount-len(brands))
-	}
-
+// exportFiles writes data to CSV and JSON files, with optional compression.
+// Returns the list of output files created.
+func exportFiles[T sources.CSVExportable](data []T, csvFilename, jsonFilename string, opts processOpts) ([]string, error) {
 	var files []string
 
 	// Export to CSV
-	csvFile := filepath.Join(outputDir, ct.BrandCSVFilename)
-	if err := ct.WriteBrandsCSV(csvFile, brands); err != nil {
+	csvFile := filepath.Join(opts.outputDir, csvFilename)
+	if err := sources.WriteCSV(csvFile, data); err != nil {
 		return nil, fmt.Errorf("failed to write CSV: %w", err)
 	}
-	if compress {
+	if opts.compress {
 		if err := compressFile(csvFile); err != nil {
 			return nil, fmt.Errorf("failed to compress CSV: %w", err)
 		}
@@ -224,11 +188,11 @@ func processBrands(appToken string, maxCacheAge time.Duration, outputDir string,
 	}
 
 	// Export to JSON
-	jsonFile := filepath.Join(outputDir, ct.BrandJSONFilename)
-	if err := ct.WriteBrandsJSON(jsonFile, brands); err != nil {
+	jsonFile := filepath.Join(opts.outputDir, jsonFilename)
+	if err := sources.WriteJSON(jsonFile, data); err != nil {
 		return nil, fmt.Errorf("failed to write JSON: %w", err)
 	}
-	if compress {
+	if opts.compress {
 		if err := compressFile(jsonFile); err != nil {
 			return nil, fmt.Errorf("failed to compress JSON: %w", err)
 		}
@@ -238,284 +202,162 @@ func processBrands(appToken string, maxCacheAge time.Duration, outputDir string,
 		files = append(files, jsonFile)
 	}
 
-	// Insert into DuckDB
-	if err := ct.DBInsertBrands(conn, brands); err != nil {
+	return files, nil
+}
+
+// fetchOrLoadCache fetches data from API or loads from cache based on noFetch flag
+func fetchOrLoadCache[T any](
+	cacheFilename string,
+	fetchFunc func(string, time.Duration) ([]T, error),
+	opts processOpts,
+) ([]T, error) {
+	if opts.noFetch {
+		cacheBytes, err := sources.CheckCacheFile(cacheFilename, 0)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load cache: %w", err)
+		}
+		var data []T
+		if err := json.Unmarshal(cacheBytes, &data); err != nil {
+			return nil, fmt.Errorf("failed to parse cached data: %w", err)
+		}
+		return data, nil
+	}
+	return fetchFunc(opts.appToken, opts.maxCacheAge)
+}
+
+func processBrands(opts processOpts) ([]string, error) {
+	if opts.verbose {
+		log.Println("Fetching CT brands data...")
+	}
+
+	brands, err := fetchOrLoadCache(ct.BrandJSONFilename, ct.FetchBrands, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch brands: %w", err)
+	}
+	if opts.verbose {
+		log.Printf("Loaded %d brands", len(brands))
+	}
+
+	// Clean brands (specific to this dataset)
+	originalCount := len(brands)
+	brands = ct.CleanBrands(brands)
+	if opts.verbose {
+		log.Printf("Cleaned brands: %d -> %d (removed %d erroneous records)",
+			originalCount, len(brands), originalCount-len(brands))
+	}
+
+	// Export files
+	files, err := exportFiles(brands, ct.BrandCSVFilename, ct.BrandJSONFilename, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	// Insert into DuckDB (specific to this dataset)
+	if err := ct.DBInsertBrands(opts.conn, brands); err != nil {
 		return nil, fmt.Errorf("failed to insert brands: %w", err)
 	}
 
-	if verbose {
+	if opts.verbose {
 		log.Printf("Processed %d brands", len(brands))
 	}
 
 	return files, nil
 }
 
-func processCredentials(appToken string, maxCacheAge time.Duration, outputDir string, noFetch, compress, verbose bool) ([]string, error) {
-	if verbose {
+func processCredentials(opts processOpts) ([]string, error) {
+	if opts.verbose {
 		log.Println("Fetching CT credentials data...")
 	}
 
-	var credentials []ct.Credential
-	var err error
-
-	if noFetch {
-		cacheBytes, err := sources.CheckCacheFile(ct.CredentialJSONFilename, 0)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load cache: %w", err)
-		}
-		if err := json.Unmarshal(cacheBytes, &credentials); err != nil {
-			return nil, fmt.Errorf("failed to parse cached data: %w", err)
-		}
-		if verbose {
-			log.Printf("Loaded %d credentials from cache", len(credentials))
-		}
-	} else {
-		credentials, err = ct.FetchCredentials(appToken, maxCacheAge)
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch credentials: %w", err)
-		}
-		if verbose {
-			log.Printf("Fetched %d credentials from API", len(credentials))
-		}
+	credentials, err := fetchOrLoadCache(ct.CredentialJSONFilename, ct.FetchCredentials, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch credentials: %w", err)
+	}
+	if opts.verbose {
+		log.Printf("Loaded %d credentials", len(credentials))
 	}
 
-	var files []string
-
-	// Export to CSV
-	csvFile := filepath.Join(outputDir, ct.CredentialCSVFilename)
-	if err := ct.WriteCredentialsCSV(csvFile, credentials); err != nil {
-		return nil, fmt.Errorf("failed to write CSV: %w", err)
-	}
-	if compress {
-		if err := compressFile(csvFile); err != nil {
-			return nil, fmt.Errorf("failed to compress CSV: %w", err)
-		}
-		os.Remove(csvFile)
-		files = append(files, csvFile+".zst")
-	} else {
-		files = append(files, csvFile)
+	files, err := exportFiles(credentials, ct.CredentialCSVFilename, ct.CredentialJSONFilename, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	// Export to JSON
-	jsonFile := filepath.Join(outputDir, ct.CredentialJSONFilename)
-	if err := ct.WriteCredentialsJSON(jsonFile, credentials); err != nil {
-		return nil, fmt.Errorf("failed to write JSON: %w", err)
-	}
-	if compress {
-		if err := compressFile(jsonFile); err != nil {
-			return nil, fmt.Errorf("failed to compress JSON: %w", err)
-		}
-		os.Remove(jsonFile)
-		files = append(files, jsonFile+".zst")
-	} else {
-		files = append(files, jsonFile)
-	}
-
-	if verbose {
+	if opts.verbose {
 		log.Printf("Processed %d credentials", len(credentials))
 	}
 
 	return files, nil
 }
 
-func processApplications(appToken string, maxCacheAge time.Duration, outputDir string, noFetch, compress, verbose bool) ([]string, error) {
-	if verbose {
+func processApplications(opts processOpts) ([]string, error) {
+	if opts.verbose {
 		log.Println("Fetching CT applications data...")
 	}
 
-	var applications []ct.Application
-	var err error
-
-	if noFetch {
-		cacheBytes, err := sources.CheckCacheFile(ct.ApplicationJSONFilename, 0)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load cache: %w", err)
-		}
-		if err := json.Unmarshal(cacheBytes, &applications); err != nil {
-			return nil, fmt.Errorf("failed to parse cached data: %w", err)
-		}
-		if verbose {
-			log.Printf("Loaded %d applications from cache", len(applications))
-		}
-	} else {
-		applications, err = ct.FetchApplications(appToken, maxCacheAge)
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch applications: %w", err)
-		}
-		if verbose {
-			log.Printf("Fetched %d applications from API", len(applications))
-		}
+	applications, err := fetchOrLoadCache(ct.ApplicationJSONFilename, ct.FetchApplications, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch applications: %w", err)
+	}
+	if opts.verbose {
+		log.Printf("Loaded %d applications", len(applications))
 	}
 
-	var files []string
-
-	// Export to CSV
-	csvFile := filepath.Join(outputDir, ct.ApplicationCSVFilename)
-	if err := ct.WriteApplicationsCSV(csvFile, applications); err != nil {
-		return nil, fmt.Errorf("failed to write CSV: %w", err)
-	}
-	if compress {
-		if err := compressFile(csvFile); err != nil {
-			return nil, fmt.Errorf("failed to compress CSV: %w", err)
-		}
-		os.Remove(csvFile)
-		files = append(files, csvFile+".zst")
-	} else {
-		files = append(files, csvFile)
+	files, err := exportFiles(applications, ct.ApplicationCSVFilename, ct.ApplicationJSONFilename, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	// Export to JSON
-	jsonFile := filepath.Join(outputDir, ct.ApplicationJSONFilename)
-	if err := ct.WriteApplicationsJSON(jsonFile, applications); err != nil {
-		return nil, fmt.Errorf("failed to write JSON: %w", err)
-	}
-	if compress {
-		if err := compressFile(jsonFile); err != nil {
-			return nil, fmt.Errorf("failed to compress JSON: %w", err)
-		}
-		os.Remove(jsonFile)
-		files = append(files, jsonFile+".zst")
-	} else {
-		files = append(files, jsonFile)
-	}
-
-	if verbose {
+	if opts.verbose {
 		log.Printf("Processed %d applications", len(applications))
 	}
 
 	return files, nil
 }
 
-func processWeeklySales(appToken string, maxCacheAge time.Duration, outputDir string, noFetch, compress, verbose bool) ([]string, error) {
-	if verbose {
+func processWeeklySales(opts processOpts) ([]string, error) {
+	if opts.verbose {
 		log.Println("Fetching CT weekly sales data...")
 	}
 
-	var sales []ct.WeeklySales
-	var err error
-
-	if noFetch {
-		cacheBytes, err := sources.CheckCacheFile(ct.WeeklySalesJSONFilename, 0)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load cache: %w", err)
-		}
-		if err := json.Unmarshal(cacheBytes, &sales); err != nil {
-			return nil, fmt.Errorf("failed to parse cached data: %w", err)
-		}
-		if verbose {
-			log.Printf("Loaded %d weekly sales from cache", len(sales))
-		}
-	} else {
-		sales, err = ct.FetchWeeklySales(appToken, maxCacheAge)
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch weekly sales: %w", err)
-		}
-		if verbose {
-			log.Printf("Fetched %d weekly sales from API", len(sales))
-		}
+	sales, err := fetchOrLoadCache(ct.WeeklySalesJSONFilename, ct.FetchWeeklySales, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch weekly sales: %w", err)
+	}
+	if opts.verbose {
+		log.Printf("Loaded %d weekly sales", len(sales))
 	}
 
-	var files []string
-
-	// Export to CSV
-	csvFile := filepath.Join(outputDir, ct.WeeklySalesCSVFilename)
-	if err := ct.WriteWeeklySalesCSV(csvFile, sales); err != nil {
-		return nil, fmt.Errorf("failed to write CSV: %w", err)
-	}
-	if compress {
-		if err := compressFile(csvFile); err != nil {
-			return nil, fmt.Errorf("failed to compress CSV: %w", err)
-		}
-		os.Remove(csvFile)
-		files = append(files, csvFile+".zst")
-	} else {
-		files = append(files, csvFile)
+	files, err := exportFiles(sales, ct.WeeklySalesCSVFilename, ct.WeeklySalesJSONFilename, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	// Export to JSON
-	jsonFile := filepath.Join(outputDir, ct.WeeklySalesJSONFilename)
-	if err := ct.WriteWeeklySalesJSON(jsonFile, sales); err != nil {
-		return nil, fmt.Errorf("failed to write JSON: %w", err)
-	}
-	if compress {
-		if err := compressFile(jsonFile); err != nil {
-			return nil, fmt.Errorf("failed to compress JSON: %w", err)
-		}
-		os.Remove(jsonFile)
-		files = append(files, jsonFile+".zst")
-	} else {
-		files = append(files, jsonFile)
-	}
-
-	if verbose {
+	if opts.verbose {
 		log.Printf("Processed %d weekly sales", len(sales))
 	}
 
 	return files, nil
 }
 
-func processTax(appToken string, maxCacheAge time.Duration, outputDir string, noFetch, compress, verbose bool) ([]string, error) {
-	if verbose {
+func processTax(opts processOpts) ([]string, error) {
+	if opts.verbose {
 		log.Println("Fetching CT tax data...")
 	}
 
-	var taxes []ct.Tax
-	var err error
-
-	if noFetch {
-		cacheBytes, err := sources.CheckCacheFile(ct.TaxJSONFilename, 0)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load cache: %w", err)
-		}
-		if err := json.Unmarshal(cacheBytes, &taxes); err != nil {
-			return nil, fmt.Errorf("failed to parse cached data: %w", err)
-		}
-		if verbose {
-			log.Printf("Loaded %d tax records from cache", len(taxes))
-		}
-	} else {
-		taxes, err = ct.FetchTax(appToken, maxCacheAge)
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch tax: %w", err)
-		}
-		if verbose {
-			log.Printf("Fetched %d tax records from API", len(taxes))
-		}
+	taxes, err := fetchOrLoadCache(ct.TaxJSONFilename, ct.FetchTax, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch tax: %w", err)
+	}
+	if opts.verbose {
+		log.Printf("Loaded %d tax records", len(taxes))
 	}
 
-	var files []string
-
-	// Export to CSV
-	csvFile := filepath.Join(outputDir, ct.TaxCSVFilename)
-	if err := ct.WriteTaxCSV(csvFile, taxes); err != nil {
-		return nil, fmt.Errorf("failed to write CSV: %w", err)
-	}
-	if compress {
-		if err := compressFile(csvFile); err != nil {
-			return nil, fmt.Errorf("failed to compress CSV: %w", err)
-		}
-		os.Remove(csvFile)
-		files = append(files, csvFile+".zst")
-	} else {
-		files = append(files, csvFile)
+	files, err := exportFiles(taxes, ct.TaxCSVFilename, ct.TaxJSONFilename, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	// Export to JSON
-	jsonFile := filepath.Join(outputDir, ct.TaxJSONFilename)
-	if err := ct.WriteTaxJSON(jsonFile, taxes); err != nil {
-		return nil, fmt.Errorf("failed to write JSON: %w", err)
-	}
-	if compress {
-		if err := compressFile(jsonFile); err != nil {
-			return nil, fmt.Errorf("failed to compress JSON: %w", err)
-		}
-		os.Remove(jsonFile)
-		files = append(files, jsonFile+".zst")
-	} else {
-		files = append(files, jsonFile)
-	}
-
-	if verbose {
+	if opts.verbose {
 		log.Printf("Processed %d tax records", len(taxes))
 	}
 
