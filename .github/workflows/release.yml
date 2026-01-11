@@ -31,7 +31,7 @@ jobs:
           - runner: macos-latest
             goos: darwin
             goarch: arm64
-          - runner: macos-13
+          - runner: macos-15
             goos: darwin
             goarch: amd64
     runs-on: ${{ matrix.runner }}
