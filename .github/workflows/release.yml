@@ -1,15 +1,42 @@
-name: goreleaser
+name: Release
 
 on:
-  pull_request:
   push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      snapshot:
+        description: 'Create snapshot release (no tag required)'
+        required: false
+        default: 'false'
+        type: boolean
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
-  goreleaser:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            goos: linux
+            goarch: amd64
+          - runner: ubuntu-24.04-arm
+            goos: linux
+            goarch: arm64
+          - runner: macos-latest
+            goos: darwin
+            goarch: arm64
+          - runner: macos-13
+            goos: darwin
+            goarch: amd64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGO_ENABLED: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,28 +46,105 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.23'
+          go-version-file: go.mod
+          cache: true
 
-      - name: Build with GoReleaser on main
-        uses: goreleaser/goreleaser-action@v6
-        if: github.ref == 'refs/heads/main'
+      - name: Build binary
+        run: |
+          mkdir -p dist
+          go build -trimpath -o dist/dank-extract-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/dank-extract
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          # either 'goreleaser' (default) or 'goreleaser-pro'
-          distribution: goreleaser
-          version: '~ v2'
-          args: build --clean --snapshot
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          name: dank-extract-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/dank-extract-${{ matrix.goos }}-${{ matrix.goarch }}
+          retention-days: 1
 
-      - name: Publish with GoReleaser on tags
-        uses: goreleaser/goreleaser-action@v6
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p dist
+
+          # Process each artifact
+          for dir in artifacts/*/; do
+            artifact_name=$(basename "$dir")
+            binary_path=$(find "$dir" -type f | head -1)
+
+            # Extract os and arch from artifact name (dank-extract-{os}-{arch})
+            os=$(echo "$artifact_name" | cut -d'-' -f3)
+            arch=$(echo "$artifact_name" | cut -d'-' -f4)
+
+            # Map arch names for consistency
+            arch_display="$arch"
+            if [ "$arch" = "amd64" ]; then
+              arch_display="x86_64"
+            fi
+
+            # Create archive directory
+            archive_dir="dank-extract_${os}_${arch_display}"
+            mkdir -p "dist/$archive_dir"
+
+            # Copy binary with proper name
+            cp "$binary_path" "dist/$archive_dir/dank-extract"
+            chmod +x "dist/$archive_dir/dank-extract"
+
+            # Copy docs
+            cp README.md "dist/$archive_dir/" 2>/dev/null || true
+            cp LICENSE* "dist/$archive_dir/" 2>/dev/null || true
+
+            # Create archive
+            cd dist
+            tar -czvf "${archive_dir}.tar.gz" "$archive_dir"
+            cd ..
+          done
+
+          # Generate checksums
+          cd dist
+          sha256sum *.tar.gz > checksums.txt
+          cat checksums.txt
+
+      - name: Get version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "is_snapshot=false" >> $GITHUB_OUTPUT
+          else
+            echo "version=snapshot-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+            echo "is_snapshot=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
         with:
-          # either 'goreleaser' (default) or 'goreleaser-pro'
-          distribution: goreleaser
-          version: '~ v2'
-          args: release --clean
+          files: |
+            dist/*.tar.gz
+            dist/checksums.txt
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+
+      - name: Upload snapshot artifacts
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ steps.version.outputs.version }}
+          path: |
+            dist/*.tar.gz
+            dist/checksums.txt
+          retention-days: 7

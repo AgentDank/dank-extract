@@ -53,8 +53,12 @@ tasks:
     cmds:
       - ./dank-extract --snapshot snapshots
 
-  test-release-build:
-    desc: 'Test goreleaser build'
-    deps: [build]
+  test-release:
+    desc: 'Test release workflow locally with act (linux/amd64)'
     cmds:
-      - goreleaser build --snapshot --clean
+      - act -W .github/workflows/release.yml -j build --container-architecture linux/amd64 --matrix goos:linux --matrix goarch:amd64 --bind
+
+  test-release-dry:
+    desc: 'Dry-run release workflow locally'
+    cmds:
+      - act -W .github/workflows/release.yml -j build --container-architecture linux/amd64 --matrix goos:linux --matrix goarch:amd64 -n
