@@ -52,3 +52,9 @@ tasks:
     deps: [build]
     cmds:
       - ./dank-extract --snapshot snapshots
+
+  test-release-build:
+    desc: 'Test goreleaser build'
+    deps: [build]
+    cmds:
+      - goreleaser build --snapshot --clean

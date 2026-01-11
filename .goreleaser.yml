@@ -18,33 +18,16 @@ before:
 #   proxy: true
 
 builds:
-  - env:
+  - main: ./cmd/dank-extract
+    env:
       - CGO_ENABLED=0
       - GOEXPERIMENT=greenteagc
     goos:
       - linux
       - darwin
-      - windows
-      - freebsd
-      - openbsd
-      - netbsd
-      - android
     goarch:
       - amd64
       - arm64
-      - "386"
-      - arm
-    goarm:
-      - "7"
-    ignore:
-      - goos: android
-        goarch: amd64
-      - goos: android
-        goarch: arm
-      - goos: android
-        goarch: "386"
-      - goos: windows
-        goarch: arm
     flags:
       - -trimpath
 

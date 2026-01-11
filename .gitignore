@@ -10,6 +10,7 @@
 /dank-data.duckdb
 /*.csv
 /*.json
+/dist
 
 # don't commit snapthots!
 /snapshots
