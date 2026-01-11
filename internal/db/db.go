@@ -8,7 +8,7 @@ import (
 
 	"github.com/AgentDank/dank-extract/sources/us/ct"
 	// Import the DuckDB driver
-	_ "github.com/marcboeker/go-duckdb/v2"
+	_ "github.com/duckdb/duckdb-go/v2"
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,4 +21,3 @@ func RunMigration(conn *sql.DB) error {
 	}
 	return nil
 }
-
