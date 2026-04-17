@@ -66,9 +66,16 @@ Use `--compress` to output `.zst` compressed files.
 
 ## Supported Datasets
 
-Currently the following datasets are supported:
+Currently the following CT (Connecticut) cannabis datasets are supported:
 
- * [US CT Medical Marijuana and Adult Use Cannabis Brand Registry](https://data.ct.gov/Health-and-Human-Services/Medical-Marijuana-and-Adult-Use-Cannabis-Brand-Reg/egd5-wb6r/about_data)
+ * [Medical Marijuana and Adult-Use Cannabis Product Registry](https://data.ct.gov/Health-and-Human-Services/Medical-Marijuana-and-Adult-Use-Cannabis-Brand-Reg/egd5-wb6r/about_data) — `brands`
+ * [Cannabis Applications](https://data.ct.gov/Business/Cannabis-Applications/bqby-dyzr/about_data) — `applications`
+ * [Cannabis Credentials](https://data.ct.gov/Business/Cannabis-Credentials/tjfe-s2x9/about_data) — `credentials`
+ * [Cannabis Weekly Retail Sales](https://data.ct.gov/Business/Cannabis-Weekly-Retail-Sales/ucaf-96h6/about_data) — `sales`
+ * [Cannabis Tax](https://data.ct.gov/Business/Cannabis-Tax/jey2-vq68/about_data) — `tax`
+ * [Licensed Cannabis and Medical Marijuana Retail Locations](https://data.ct.gov/Business/Licensed-Cannabis-and-Medical-Marijuana-Retail-Loc/42yd-3x3d/about_data) — `retail-locations`
+ * [Cannabis Zoning](https://data.ct.gov/Business/Cannabis-Zoning/khc7-gd9u/about_data) — `zoning`
+ * [Weekly Cannabis Establishment Lottery Report](https://data.ct.gov/Business/Weekly-Cannabis-Establishment-Lottery-Report/w85q-8cfm/about_data) — `lottery`
 
 ## Data Cleaning
 
