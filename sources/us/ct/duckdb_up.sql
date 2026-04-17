@@ -145,3 +145,24 @@ CREATE TABLE IF NOT EXISTS ct_tax (
 
 CREATE UNIQUE INDEX IF NOT EXISTS ct_tax_period ON ct_tax (period_end_date);
 CREATE INDEX IF NOT EXISTS ct_tax_fiscal_year ON ct_tax (fiscal_year);
+
+-------------------------------------------------------------------------------
+-- Retail Locations (licensed cannabis/medical marijuana retail locations)
+-------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS ct_retail_locations (
+    type       TEXT,
+    business   TEXT,
+    dba        TEXT,
+    license    TEXT NOT NULL,
+    street     TEXT,
+    city       TEXT,
+    zipcode    TEXT,
+    website    TEXT,
+    longitude  DOUBLE,
+    latitude   DOUBLE
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ct_retail_locations_license ON ct_retail_locations (license);
+CREATE INDEX IF NOT EXISTS ct_retail_locations_city ON ct_retail_locations (city);
+CREATE INDEX IF NOT EXISTS ct_retail_locations_type ON ct_retail_locations (type);

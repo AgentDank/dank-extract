@@ -27,6 +27,7 @@ var availableDatasets = []string{
 	"applications",
 	"sales",
 	"tax",
+	"retail-locations",
 }
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 	flag.StringVar(&rootDir, "root", ".", "Root directory for .dank data")
 	flag.StringVarP(&outputDir, "output", "o", "", "Output directory for exports (default: current directory)")
 	flag.StringVar(&dbFile, "db", "", "DuckDB file path (default: dank-data.duckdb)")
-	flag.StringSliceVarP(&datasets, "dataset", "d", availableDatasets, "Datasets to fetch (brands,credentials,applications,sales,tax)")
+	flag.StringSliceVarP(&datasets, "dataset", "d", availableDatasets, "Datasets to fetch (brands,credentials,applications,sales,tax,retail-locations)")
 	flag.StringVarP(&snapshotDir, "snapshot", "s", "", "Create snapshot in directory (e.g., ./snapshots)")
 	flag.StringVar(&snapshotDate, "snapshot-date", "", "Snapshot date in YYYY-MM-DD format (default: today)")
 	flag.BoolVarP(&noFetch, "no-fetch", "n", false, "Don't fetch data, use existing cache")
@@ -139,11 +140,12 @@ func main() {
 
 	// Process each selected dataset
 	processors := map[string]func(processOpts) ([]string, error){
-		"brands":       processBrands,
-		"credentials":  processCredentials,
-		"applications": processApplications,
-		"sales":        processWeeklySales,
-		"tax":          processTax,
+		"brands":           processBrands,
+		"credentials":      processCredentials,
+		"applications":     processApplications,
+		"sales":            processWeeklySales,
+		"tax":              processTax,
+		"retail-locations": processRetailLocations,
 	}
 
 	for _, name := range availableDatasets {
@@ -405,6 +407,35 @@ func processTax(opts processOpts) ([]string, error) {
 
 	if opts.verbose {
 		log.Printf("Processed %d tax records", len(taxes))
+	}
+
+	return files, nil
+}
+
+func processRetailLocations(opts processOpts) ([]string, error) {
+	if opts.verbose {
+		log.Println("Fetching CT retail locations data...")
+	}
+
+	locations, err := fetchOrLoadCache(ct.RetailLocationJSONFilename, ct.FetchRetailLocations, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch retail locations: %w", err)
+	}
+	if opts.verbose {
+		log.Printf("Loaded %d retail locations", len(locations))
+	}
+
+	files, err := exportFiles(locations, ct.RetailLocationCSVFilename, ct.RetailLocationJSONFilename, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := ct.DBInsertRetailLocations(opts.conn, locations); err != nil {
+		return nil, fmt.Errorf("failed to insert retail locations: %w", err)
+	}
+
+	if opts.verbose {
+		log.Printf("Processed %d retail locations", len(locations))
 	}
 
 	return files, nil
