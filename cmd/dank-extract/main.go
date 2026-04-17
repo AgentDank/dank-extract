@@ -29,6 +29,7 @@ var availableDatasets = []string{
 	"tax",
 	"retail-locations",
 	"zoning",
+	"lottery",
 }
 
 func main() {
@@ -52,7 +53,7 @@ func main() {
 	flag.StringVar(&rootDir, "root", ".", "Root directory for .dank data")
 	flag.StringVarP(&outputDir, "output", "o", "", "Output directory for exports (default: current directory)")
 	flag.StringVar(&dbFile, "db", "", "DuckDB file path (default: dank-data.duckdb)")
-	flag.StringSliceVarP(&datasets, "dataset", "d", availableDatasets, "Datasets to fetch (brands,credentials,applications,sales,tax,retail-locations,zoning)")
+	flag.StringSliceVarP(&datasets, "dataset", "d", availableDatasets, "Datasets to fetch (brands,credentials,applications,sales,tax,retail-locations,zoning,lottery)")
 	flag.StringVarP(&snapshotDir, "snapshot", "s", "", "Create snapshot in directory (e.g., ./snapshots)")
 	flag.StringVar(&snapshotDate, "snapshot-date", "", "Snapshot date in YYYY-MM-DD format (default: today)")
 	flag.BoolVarP(&noFetch, "no-fetch", "n", false, "Don't fetch data, use existing cache")
@@ -148,6 +149,7 @@ func main() {
 		"tax":              processTax,
 		"retail-locations": processRetailLocations,
 		"zoning":           processZoning,
+		"lottery":          processLottery,
 	}
 
 	for _, name := range availableDatasets {
@@ -467,6 +469,35 @@ func processZoning(opts processOpts) ([]string, error) {
 
 	if opts.verbose {
 		log.Printf("Processed %d zoning records", len(zoning))
+	}
+
+	return files, nil
+}
+
+func processLottery(opts processOpts) ([]string, error) {
+	if opts.verbose {
+		log.Println("Fetching CT lottery data...")
+	}
+
+	lottery, err := fetchOrLoadCache(ct.LotteryJSONFilename, ct.FetchLottery, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch lottery: %w", err)
+	}
+	if opts.verbose {
+		log.Printf("Loaded %d lottery records", len(lottery))
+	}
+
+	files, err := exportFiles(lottery, ct.LotteryCSVFilename, ct.LotteryJSONFilename, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := ct.DBInsertLottery(opts.conn, lottery); err != nil {
+		return nil, fmt.Errorf("failed to insert lottery: %w", err)
+	}
+
+	if opts.verbose {
+		log.Printf("Processed %d lottery records", len(lottery))
 	}
 
 	return files, nil

@@ -179,3 +179,15 @@ CREATE TABLE IF NOT EXISTS ct_zoning (
 
 CREATE UNIQUE INDEX IF NOT EXISTS ct_zoning_town ON ct_zoning (town);
 CREATE INDEX IF NOT EXISTS ct_zoning_status ON ct_zoning (status);
+
+-------------------------------------------------------------------------------
+-- Lottery (weekly cannabis establishment lottery allocations)
+-------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS ct_lottery (
+    credential_type              TEXT NOT NULL,
+    social_equity_council_lottery INTEGER,
+    general_lottery              INTEGER
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ct_lottery_type ON ct_lottery (credential_type);
