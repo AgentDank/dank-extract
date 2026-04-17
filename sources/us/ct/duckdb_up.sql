@@ -166,3 +166,16 @@ CREATE TABLE IF NOT EXISTS ct_retail_locations (
 CREATE UNIQUE INDEX IF NOT EXISTS ct_retail_locations_license ON ct_retail_locations (license);
 CREATE INDEX IF NOT EXISTS ct_retail_locations_city ON ct_retail_locations (city);
 CREATE INDEX IF NOT EXISTS ct_retail_locations_type ON ct_retail_locations (type);
+
+-------------------------------------------------------------------------------
+-- Zoning (municipal cannabis zoning status)
+-------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS ct_zoning (
+    town    TEXT NOT NULL,
+    state   TEXT,
+    status  TEXT
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ct_zoning_town ON ct_zoning (town);
+CREATE INDEX IF NOT EXISTS ct_zoning_status ON ct_zoning (status);
