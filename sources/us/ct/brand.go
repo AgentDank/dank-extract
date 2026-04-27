@@ -36,7 +36,7 @@ type Image struct {
 type Brand struct {
 	BrandName                    string       `csv:"BRAND-NAME" json:"brand_name"`
 	DosageForm                   string       `csv:"DOSAGE-FORM" json:"dosage_form"`
-	BrandingEntity               string       `csv:"BRANDING-ENTITY" json:"branding_entity"`
+	Producer                     string       `csv:"PRODUCER" json:"producer"`
 	ProductImage                 Image        `csv:"PRODUCT-IMAGE" json:"product_image"`
 	LabelImage                   Image        `csv:"LABEL-IMAGE" json:"label_image"`
 	LabAnalysis                  Image        `csv:"LAB-ANALYSIS" json:"lab_analysis"`
@@ -143,7 +143,7 @@ func IsBrandErroneous(b *Brand) bool {
 
 // CSVHeaders returns the CSV headers for the Brand struct
 func (b Brand) CSVHeaders() string {
-	return `"brand_name","dosage_form","branding_entity","product_image_url","product_image_desc","label_image_url","label_image_desc","lab_analysis_url","lab_analysis_desc","approval_date","registration_number","tetrahydrocannabinol_thc","tetrahydrocannabinol_acid_thca","cannabidiols_cbd","cannabidiol_acid_cbda","a_pinene","b_myrcene","b_caryophyllene","b_pinene","limonene","ocimene","linalool_lin","humulene_hum","cbg","cbg_a","cannabavarin_cbdv","cannabichromene_cbc","cannbinol_cbn","tetrahydrocannabivarin_thcv","a_bisabolol","a_phellandrene","a_terpinene","b_eudesmol","b_terpinene","fenchone","pulegol","borneol","isopulegol","carene","camphene","camphor","caryophyllene_oxide","cedrol","eucalyptol","geraniol","guaiol","geranyl_acetate","isoborneol","menthol","l_fenchone","nerol","sabinene","terpineol","terpinolene","trans_b_farnesene","valencene","a_cedrene","a_farnesene","b_farnesene","cis_nerolidol","fenchol","trans_nerolidol","market","chemotype","processing_technique","solvents_used","national_drug_code"
+	return `"brand_name","dosage_form","producer","product_image_url","product_image_desc","label_image_url","label_image_desc","lab_analysis_url","lab_analysis_desc","approval_date","registration_number","tetrahydrocannabinol_thc","tetrahydrocannabinol_acid_thca","cannabidiols_cbd","cannabidiol_acid_cbda","a_pinene","b_myrcene","b_caryophyllene","b_pinene","limonene","ocimene","linalool_lin","humulene_hum","cbg","cbg_a","cannabavarin_cbdv","cannabichromene_cbc","cannbinol_cbn","tetrahydrocannabivarin_thcv","a_bisabolol","a_phellandrene","a_terpinene","b_eudesmol","b_terpinene","fenchone","pulegol","borneol","isopulegol","carene","camphene","camphor","caryophyllene_oxide","cedrol","eucalyptol","geraniol","guaiol","geranyl_acetate","isoborneol","menthol","l_fenchone","nerol","sabinene","terpineol","terpinolene","trans_b_farnesene","valencene","a_cedrene","a_farnesene","b_farnesene","cis_nerolidol","fenchol","trans_nerolidol","market","chemotype","processing_technique","solvents_used","national_drug_code"
 `
 }
 
@@ -151,7 +151,7 @@ func (b Brand) CSVHeaders() string {
 func (b Brand) CSVValue() string {
 	return fmt.Sprintf(`"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s",%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"%s","%s","%s","%s","%s"
 `,
-		CSVString(b.BrandName), CSVString(b.DosageForm), CSVString(b.BrandingEntity),
+		CSVString(b.BrandName), CSVString(b.DosageForm), CSVString(b.Producer),
 		CSVString(b.ProductImage.URL), CSVString(b.ProductImage.Description),
 		CSVString(b.LabelImage.URL), CSVString(b.LabelImage.Description),
 		CSVString(b.LabAnalysis.URL), CSVString(b.LabAnalysis.Description),
@@ -181,7 +181,7 @@ func DBInsertBrands(conn *sql.DB, brands []Brand) error {
 	}
 
 	sqlHeader := `INSERT INTO ct_brands (
-brand_name,dosage_form,branding_entity,product_image_url,product_image_desc,label_image_url,
+brand_name,dosage_form,producer,product_image_url,product_image_desc,label_image_url,
 label_image_desc,lab_analysis_url,lab_analysis_desc,approval_date,registration_number,
 tetrahydrocannabinol_thc,tetrahydrocannabinol_acid_thca,cannabidiols_cbd,cannabidiol_acid_cbda,
 a_pinene,b_myrcene,b_caryophyllene,b_pinene,limonene,ocimene,linalool_lin,humulene_hum,cbg,
@@ -204,7 +204,7 @@ VALUES `
 		}
 		isFirst = false
 		sb.WriteString(fmt.Sprintf(sqlFormat,
-			sources.SQLString(b.BrandName), sources.SQLString(b.DosageForm), sources.SQLString(b.BrandingEntity),
+			sources.SQLString(b.BrandName), sources.SQLString(b.DosageForm), sources.SQLString(b.Producer),
 			sources.SQLString(b.ProductImage.URL), sources.SQLString(b.ProductImage.Description),
 			sources.SQLString(b.LabelImage.URL), sources.SQLString(b.LabelImage.Description),
 			sources.SQLString(b.LabAnalysis.URL), sources.SQLString(b.LabAnalysis.Description),

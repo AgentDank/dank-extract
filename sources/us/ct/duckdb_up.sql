@@ -8,7 +8,7 @@
 CREATE TABLE IF NOT EXISTS ct_brands (
     brand_name TEXT,
     dosage_form TEXT,
-    branding_entity TEXT,
+    producer TEXT,
     product_image_url TEXT,
     product_image_desc TEXT,
     label_image_url TEXT,
@@ -172,9 +172,15 @@ CREATE INDEX IF NOT EXISTS ct_retail_locations_type ON ct_retail_locations (type
 -------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS ct_zoning (
-    town    TEXT NOT NULL,
-    state   TEXT,
-    status  TEXT
+    town             TEXT NOT NULL,
+    state            TEXT,
+    status           TEXT,
+    date_adopted     TEXT,
+    date_effective   TEXT,
+    notes            TEXT,
+    date_adopted_1   TEXT,
+    date_effective_1 TEXT,
+    notes_1          TEXT
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS ct_zoning_town ON ct_zoning (town);

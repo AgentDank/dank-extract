@@ -1,5 +1,9 @@
 # `dank-extract` CHANGELOG
 
+## v0.2.1
+
+ * Fix missing Zoning columns and incorrect brand `Producer` column name
+
 ## v0.2.0
 
  * Added CT Licensed Cannabis and Medical Marijuana Retail Locations data source (`42yd-3x3d`).
